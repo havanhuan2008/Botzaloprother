@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Log webhook{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="h3 fw-bold mb-1">Log webhook và auto reply</h1>
+    <div class="text-secondary">Tối đa 200 bản ghi gần nhất.</div>
+  </div>
+  <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">Quay lại dashboard</a>
+</div>
+
+<div class="card card-soft">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Thời gian</th>
+            <th>User ID</th>
+            <th>Tin nhắn vào</th>
+            <th>Rule khớp</th>
+            <th>Tin phản hồi</th>
+            <th>Trạng thái</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for log in logs %}
+          <tr>
+            <td class="small">{{ log.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            <td class="mono small">{{ log.user_id or '-' }}</td>
+            <td>{{ log.incoming_text or '-' }}</td>
+            <td>{{ log.matched_rule_name or '-' }}</td>
+            <td>{{ log.reply_text or '-' }}</td>
+            <td><span class="badge text-bg-secondary">{{ log.status }}</span></td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="6" class="text-center py-5 text-secondary">Chưa có log nào.</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

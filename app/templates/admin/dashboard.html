@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard admin{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="h3 fw-bold mb-1">Dashboard quản trị</h1>
+    <div class="text-secondary">Quản lý rule trả lời tự động và theo dõi log webhook.</div>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('create_rule') }}" class="btn btn-primary">+ Thêm rule</a>
+    <a href="{{ url_for('admin_logs') }}" class="btn btn-outline-secondary">Xem log</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card card-soft"><div class="card-body"><div class="text-secondary small">Tổng rule</div><div class="fs-3 fw-bold">{{ total_rules }}</div></div></div>
+  </div>
+  <div class="col-md-3">
+    <div class="card card-soft"><div class="card-body"><div class="text-secondary small">Rule đang bật</div><div class="fs-3 fw-bold">{{ active_rules }}</div></div></div>
+  </div>
+  <div class="col-md-3">
+    <div class="card card-soft"><div class="card-body"><div class="text-secondary small">Rule mặc định</div><div class="fs-3 fw-bold">{{ fallback_rules }}</div></div></div>
+  </div>
+  <div class="col-md-3">
+    <div class="card card-soft"><div class="card-body"><div class="text-secondary small">Tổng log</div><div class="fs-3 fw-bold">{{ total_logs }}</div></div></div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card card-soft">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h5 fw-bold mb-0">Danh sách rule</h2>
+          <span class="text-secondary small">Thứ tự ưu tiên: số nhỏ chạy trước</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tên rule</th>
+                <th>Kiểu khớp</th>
+                <th>Từ khóa</th>
+                <th>Ưu tiên</th>
+                <th>Trạng thái</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for rule in rules %}
+              <tr>
+                <td>{{ rule.id }}</td>
+                <td>
+                  <div class="fw-semibold">{{ rule.name }}</div>
+                  <div class="small text-secondary">{{ rule.reply_text[:70] }}{% if rule.reply_text|length > 70 %}...{% endif %}</div>
+                </td>
+                <td>{{ match_types.get(rule.match_type, rule.match_type) }}</td>
+                <td><span class="mono">{{ rule.keyword or '-' }}</span></td>
+                <td>{{ rule.priority }}</td>
+                <td>
+                  {% if rule.is_active %}
+                    <span class="badge text-bg-success">Đang bật</span>
+                  {% else %}
+                    <span class="badge text-bg-secondary">Đang tắt</span>
+                  {% endif %}
+                </td>
+                <td class="text-end">
+                  <div class="d-flex gap-2 justify-content-end">
+                    <a href="{{ url_for('edit_rule', rule_id=rule.id) }}" class="btn btn-sm btn-outline-primary">Sửa</a>
+                    <form method="post" action="{{ url_for('delete_rule', rule_id=rule.id) }}" onsubmit="return confirm('Xóa rule này?')">
+                      <button class="btn btn-sm btn-outline-danger">Xóa</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {% else %}
+              <tr><td colspan="7" class="text-center text-secondary py-4">Chưa có rule nào.</td></tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card card-soft mb-4">
+      <div class="card-body p-4">
+        <h2 class="h5 fw-bold mb-3">Gửi tin test</h2>
+        <form method="post" action="{{ url_for('admin_test_send') }}" class="vstack gap-3">
+          <div>
+            <label class="form-label">User ID Zalo</label>
+            <input class="form-control" name="user_id" placeholder="Ví dụ: 2512523625412515" required>
+          </div>
+          <div>
+            <label class="form-label">Nội dung</label>
+            <textarea class="form-control" rows="4" name="text" required></textarea>
+          </div>
+          <button class="btn btn-dark">Gửi thử</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card card-soft">
+      <div class="card-body p-4">
+        <h2 class="h5 fw-bold mb-3">10 log mới nhất</h2>
+        <div class="vstack gap-3">
+          {% for log in recent_logs %}
+            <div class="border rounded-4 p-3 bg-light">
+              <div class="d-flex justify-content-between gap-2 mb-1">
+                <strong>{{ log.user_id or 'Không rõ user' }}</strong>
+                <span class="badge text-bg-secondary">{{ log.status }}</span>
+              </div>
+              <div class="small text-secondary mb-1">{{ log.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+              <div class="small"><strong>Vào:</strong> {{ log.incoming_text or '-' }}</div>
+              <div class="small"><strong>Rule:</strong> {{ log.matched_rule_name or '-' }}</div>
+            </div>
+          {% else %}
+            <div class="text-secondary">Chưa có log.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

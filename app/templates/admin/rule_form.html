@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}{% if rule %}Sửa rule{% else %}Thêm rule{% endif %}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card card-soft">
+      <div class="card-body p-4 p-lg-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h1 class="h3 fw-bold mb-1">{% if rule %}Sửa rule{% else %}Thêm rule mới{% endif %}</h1>
+            <div class="text-secondary">Thiết lập điều kiện khớp và nội dung phản hồi tự động.</div>
+          </div>
+          <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">Quay lại</a>
+        </div>
+
+        <form method="post" class="vstack gap-3">
+          <div>
+            <label class="form-label">Tên rule</label>
+            <input class="form-control form-control-lg" name="name" value="{{ rule.name if rule else '' }}" required>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Kiểu khớp</label>
+              <select class="form-select form-select-lg" name="match_type">
+                {% for key, label in match_types.items() %}
+                  <option value="{{ key }}" {% if rule and rule.match_type == key %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Ưu tiên</label>
+              <input type="number" class="form-control form-control-lg" name="priority" value="{{ rule.priority if rule else 100 }}" required>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Từ khóa</label>
+            <input class="form-control form-control-lg" name="keyword" value="{{ rule.keyword if rule else '' }}" placeholder="Ví dụ: giá, khuyến mãi, địa chỉ">
+            <div class="form-text">Với rule mặc định (fallback), bạn có thể để trống trường này.</div>
+          </div>
+
+          <div>
+            <label class="form-label">Nội dung trả lời</label>
+            <textarea class="form-control" rows="7" name="reply_text" required>{{ rule.reply_text if rule else '' }}</textarea>
+          </div>
+
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="is_active" name="is_active" {% if not rule or rule.is_active %}checked{% endif %}>
+            <label class="form-check-label" for="is_active">Bật rule này</label>
+          </div>
+
+          <button class="btn btn-primary btn-lg" type="submit">{% if rule %}Lưu thay đổi{% else %}Tạo rule{% endif %}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
