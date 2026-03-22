@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Trang chủ | Zalo Auto Reply Bot{% endblock %}
+{% block content %}
+<div class="row g-4 align-items-stretch">
+  <div class="col-lg-7">
+    <div class="card card-soft h-100">
+      <div class="card-body p-4 p-lg-5">
+        <span class="badge text-bg-primary mb-3">Python + Flask + Zalo OA + Render</span>
+        <h1 class="display-6 fw-bold mb-3">Bot Zalo trả lời tin nhắn tự động có web admin</h1>
+        <p class="text-secondary mb-4">
+          Bộ mã nguồn này nhận tin nhắn từ webhook Zalo OA, dò rule tự động trong database, gửi phản hồi lại cho user và cho phép quản trị rule trên giao diện web.
+        </p>
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <div class="border rounded-4 p-3 bg-light">
+              <div class="small text-secondary">Tổng rule</div>
+              <div class="fs-3 fw-bold">{{ total_rules }}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="border rounded-4 p-3 bg-light">
+              <div class="small text-secondary">Rule đang bật</div>
+              <div class="fs-3 fw-bold">{{ active_rules }}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="border rounded-4 p-3 bg-light">
+              <div class="small text-secondary">Lượt log</div>
+              <div class="fs-3 fw-bold">{{ total_logs }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">Vào trang admin</a>
+          <a href="{{ url_for('healthz') }}" class="btn btn-outline-secondary btn-lg">Kiểm tra health</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card card-soft h-100">
+      <div class="card-body p-4">
+        <h2 class="h4 fw-bold mb-3">Luồng hoạt động</h2>
+        <ol class="ps-3 text-secondary">
+          <li class="mb-2">User nhắn tin vào Zalo OA.</li>
+          <li class="mb-2">Zalo gọi webhook <span class="mono">/webhook/zalo</span>.</li>
+          <li class="mb-2">Server trích xuất nội dung, tìm rule phù hợp theo ưu tiên.</li>
+          <li class="mb-2">Bot gửi tin phản hồi qua API <span class="mono">/v3.0/oa/message/cs</span>.</li>
+          <li class="mb-2">Toàn bộ được lưu log để admin theo dõi.</li>
+        </ol>
+        <div class="alert alert-warning mb-0">
+          Lưu ý: mã nguồn này được thiết kế cho <strong>Zalo Official Account (OA)</strong>, không phải tài khoản cá nhân thông thường.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
